@@ -1,2 +1,2 @@
-# maratona-em-c
- Resolvendo exercícios da Maratona de Programação em linguagem C
+# Maratona Em C
+ Resolvendo exercícios da **Maratona de Programação** em *Linguagem C*.
