@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+//Lomuto's Partition
 int lomutoPartition(int *A, int l, int r) {
     int p=A[l];
     int s=l;
