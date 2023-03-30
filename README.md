@@ -1,3 +1,3 @@
-# Maratona de Programação
+# Algoritmos
 
-Eae galera, tudo tranquilo!? 🙃 A minha ideia aqui é tentar resolver alguns exercícios da __Maratona de Programação__, em paralelo às minhas 🏫aulas🏫 de programação na UFS. Fique a vontade para vasculhar o código e 💢reportar💢 experiências.
+🙃 A minha ideia aqui é implementar algoritmos que estou estudando, em paralelo às minhas 🏫aulas🏫 de  __PAA__ e/ou de __Grafos__ na UFS.
