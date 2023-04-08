@@ -22,11 +22,11 @@ start:
     jmp fim
 
 fatorial:
-    push ebp ;prólogo
+    push ebp ;prologo
     mov ebp,esp
     
-    ;implementação
-    mov ecx, dword ptr [ebp][8] ;teste do parâmetro igual a 1
+    ;implementacao
+    mov ecx, dword ptr [ebp][8] ;teste do parametro igual a 1
     cmp ecx,1
     je epilogo ;Se for 1. 
 
