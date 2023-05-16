@@ -1,3 +1,6 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
 #define NOTE_B0  31
 #define NOTE_C1  33
 #define NOTE_CS1 35
@@ -89,19 +92,21 @@
 #define NOTE_DS8 4978
 #define REST      0
 
+// C++ code
+//
+LiquidCrystal_I2C lcd(32, 16, 2);
 
-int tempo = 200;
-int buzzer = 13;
+int buttonState = 0;
+int perfects = 0;
+int misses = 0;
 
-// notes of the moledy followed by the duration.
-// a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
-// !!negative numbers are used to represent dotted notes,
-// so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+// notas da melodia, seguido da duracao.
+// 4 significa uma quarta, 8 uma oitava , 16 decimasexta...
+// !!numeros negativos sao notas com ponto,
+// entao -4 eh uma quarta com ponto, ou seja, uma quarta mais uma oitava!!
 int hePirate[] = {
-
   // He's A Pirate
   // Score available at https://musescore.com/onnikoivisto/scores/3992921
-
   NOTE_D5,4, NOTE_D5,8, NOTE_D5,4, NOTE_D5,8, NOTE_D5,4, NOTE_D5,8, NOTE_D5,8, NOTE_D5,8, NOTE_D5,8,
   NOTE_D5,4, NOTE_D5,8, NOTE_D5,4, NOTE_D5,8, NOTE_D5,4, NOTE_D5,8, NOTE_D5,8, NOTE_D5,8, NOTE_D5,8,
   NOTE_D5,4, NOTE_D5,8, NOTE_D5,4, NOTE_D5,8, NOTE_D5,4, NOTE_D5,8, NOTE_D5,8, NOTE_A4,8, NOTE_C5,8,
@@ -133,18 +138,80 @@ int hePirate[] = {
   NOTE_G5,4, NOTE_G5,4, NOTE_G5,4, NOTE_G5,8, NOTE_A5,2, REST,8,
   NOTE_A5,4, NOTE_A5,4, NOTE_A5,4, NOTE_AS5,8, NOTE_A5,2, REST,8,
   NOTE_G5,4, NOTE_F5,4, NOTE_E5,4, NOTE_D5,2, NOTE_D5,8, NOTE_E5,8,
+  
+  NOTE_F5,2, NOTE_G5,8, NOTE_A5,8, NOTE_G5,4, NOTE_F5,4, NOTE_E5,4,
+  NOTE_F5,4, NOTE_G5,4, NOTE_A5,4, NOTE_G5,2, NOTE_F5,8, NOTE_G5,8,
+  NOTE_A5,2, NOTE_G5,8, NOTE_F5,8, NOTE_E5,4, NOTE_F5,4, NOTE_E5,4,
+  NOTE_D5,2, NOTE_E5,8, NOTE_C5,8, NOTE_D5,2, NOTE_D6,8, NOTE_E6,8,
+  NOTE_F6,2, NOTE_E6,8, NOTE_F6,8, NOTE_G6,4, NOTE_F6,4, NOTE_G6,4,
+  NOTE_A6,4, NOTE_G6,4, NOTE_F6,4, NOTE_D6,2, NOTE_D6,8, NOTE_E6,8,
+  NOTE_F6,4, NOTE_G6,4, NOTE_A6,4, NOTE_AS6,4, NOTE_D6,4, NOTE_G6,4,
+  NOTE_F6,2, NOTE_G6,8, NOTE_E6,8, NOTE_D6,2, NOTE_E6,8, NOTE_CS6,8,
+  
+  NOTE_A6,-2, NOTE_AS6,-2, NOTE_A6,4, NOTE_A6,4, NOTE_A6,4, NOTE_A6,8, NOTE_G6,2, REST,8,
+  NOTE_G6,-2, NOTE_F6,-2, NOTE_E6,4, NOTE_F6,4, NOTE_E6,4, NOTE_D6,-4, NOTE_D6,8, NOTE_E6,8, NOTE_F6,8,
+  NOTE_A6,-4, NOTE_D6,8, NOTE_E6,8, NOTE_F6,8, NOTE_AS6,-4, NOTE_D6,8, NOTE_E6,8, NOTE_F6,8,
+  NOTE_A6,4, NOTE_A6,4, NOTE_C7,4, NOTE_A6,8, NOTE_G6,2, REST,8,
+  NOTE_G6,-2, NOTE_F6,-2, NOTE_E6,4, NOTE_F6,4, NOTE_E6,4, NOTE_D6,2, NOTE_E6,8, NOTE_C6,8, NOTE_D6,-2,
 };
 
-
+#define tempo 200;
 int notes = sizeof(hePirate) / sizeof(hePirate[0]) / 2;
 int wholenote = (60000 * 4) / tempo;
 int divider = 0, noteDuration = 0;
 
-void setup() {
+//acender led
+void switchLed(int luzes)
+{
+  if(luzes==0)
+  {
+    return;
+  }
+  
+  digitalWrite(9, LOW);
+  digitalWrite(10, LOW);
+  digitalWrite(11, LOW);
+  digitalWrite(12, LOW);
+  
+  if(luzes>=5)
+  {
+    digitalWrite(9, HIGH);
+    digitalWrite(10, HIGH);
+    digitalWrite(11, HIGH);
+    digitalWrite(12, HIGH);
+    return;
+  }
+  
+  luzes+=8;
+  digitalWrite(luzes, HIGH);
+}
+
+//tela inicial
+void screenGame()
+{
+  lcd.setCursor(0,0);
+  lcd.print("Iniciar musica");
+}
+
+//tela game
+void pointsGame()
+{
+  lcd.setCursor(0,0);
+  lcd.print("Perfect    Miss");
+  lcd.setCursor(0,1);
+  lcd.print(perfects);
+  lcd.setCursor(11,1);
+  lcd.print(misses);
+}
+
+//iniciar musica
+void iniciar()
+{
+  pointsGame();
   int thisNote=0;
   for (thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
-
-    divider = hePirate[thisNote + 1];
+  	divider = hePirate[thisNote + 1];
+    
     if (divider > 0) {
       noteDuration = (wholenote) / divider;
     } else if (divider < 0) {
@@ -152,11 +219,30 @@ void setup() {
       noteDuration *= 1.5;
     }
     
-    tone(buzzer, hePirate[thisNote], noteDuration * 0.9);
+    tone(2, hePirate[thisNote], noteDuration * 0.9);
     delay(noteDuration);
-    noTone(buzzer);
+    noTone(2);
   }
 }
 
-void loop() {
+// setup e loop
+void setup()
+{
+  lcd.init();
+  lcd.backlight();
+  pinMode(13, INPUT);
+  pinMode(12, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(9, OUTPUT);
+}
+
+void loop()
+{
+  screenGame();
+  buttonState = digitalRead(13);
+  if(buttonState==HIGH) {
+    iniciar();
+  }
+  delay(200);
 }
