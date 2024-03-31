@@ -8,8 +8,10 @@
 // Saída
 // Você deve imprimir a mensagem "Hello World!" e em seguida o final de linha, conforme o exemplo abaixo.
 
+import java.io.IOException;
+
 public class P1000 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Hello World!");
     }
 }
