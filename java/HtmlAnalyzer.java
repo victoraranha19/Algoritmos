@@ -9,6 +9,7 @@ public class HtmlAnalyzer {
     public static void main(String[] args) {
         try {
             // Cria uma URL
+            @SuppressWarnings("deprecation")
             URL url = new URL(args[0]);
 
             // Abre uma conexão com a URL
